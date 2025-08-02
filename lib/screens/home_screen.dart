@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../widgets/week_calendar.dart';
 import '../widgets/check_in_section.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, required this.title});
-
-  final String title;
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final currentDate = DateTime.now();
+    final month = DateFormat("MMMM").format(currentDate);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFF8F2EE),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(fontSize: 15)),
+            Text(
+              "Today, ${currentDate.day} $month",
+              style: const TextStyle(fontSize: 15),
+            ),
             const Icon(Icons.settings_outlined),
           ],
         ),

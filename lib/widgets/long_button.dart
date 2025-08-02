@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class CheckInButton extends StatelessWidget {
-  const CheckInButton({super.key, required this.onPressed});
+class LongButton extends StatelessWidget {
+  const LongButton({super.key, required this.text, required this.onPressed});
 
+  final String text;
   final VoidCallback onPressed;
 
   @override
@@ -18,12 +20,14 @@ class CheckInButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(5.0),
           ),
         ),
-        child: const Text(
-          "check in",
-          style: TextStyle(
-            color: Color(0xFFF8F2EE),
-            fontSize: 20,
-            fontWeight: FontWeight.w400,
+        child: Text(
+          text,
+          style: GoogleFonts.montserrat(
+            textStyle: const TextStyle(
+              color: Color(0xFFF8F2EE),
+              fontSize: 20,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
       ),

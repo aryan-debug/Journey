@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'check_in_button.dart';
+import 'package:journey/widgets/long_button.dart';
 
 class CheckInSection extends StatelessWidget {
   const CheckInSection({super.key});
@@ -15,7 +15,7 @@ class CheckInSection extends StatelessWidget {
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
-          CheckInButton(onPressed: () {}),
+          LongButton(text: "check in", onPressed: () {}),
         ],
       ),
     );

@@ -1,9 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'screens/home_screen.dart';
+import 'package:journey/firebase_options.dart';
+import 'package:journey/providers/google_user_provider.dart';
+import 'package:journey/screens/auth_screen.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => GoogleUserProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,16 +22,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentDate = DateTime.now();
-    final month = DateFormat("MMMM").format(currentDate);
-
     return MaterialApp(
       title: 'Journey',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF8F2EE),
-        fontFamily: 'PlayfairDisplay',
+        fontFamily: "PlayfairDisplay",
       ),
-      home: HomeScreen(title: 'Today, ${currentDate.day} $month'),
+      home: AuthWrapper(),
     );
   }
 }
