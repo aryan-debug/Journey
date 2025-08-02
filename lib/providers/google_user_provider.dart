@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:journey/models/user_model.dart';
+import 'dart:convert';
 
 class GoogleUserProvider extends ChangeNotifier {
+  static const String _userKey = 'user_data';
+
   User? _user;
   bool _isLoading = false;
   String? _error;
@@ -22,6 +26,8 @@ class GoogleUserProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
+      await _loadUserFromStorage();
+
       await GoogleSignIn.instance.initialize(
         clientId: clientId,
         serverClientId: serverClientId,
@@ -34,11 +40,47 @@ class GoogleUserProvider extends ChangeNotifier {
 
       _isInitialized = true;
 
-      await GoogleSignIn.instance.attemptLightweightAuthentication();
+      if (_user == null) {
+        await GoogleSignIn.instance.attemptLightweightAuthentication();
+      }
     } catch (error) {
       _setError('Initialization failed: ${error.toString()}');
     } finally {
       _setLoading(false);
+    }
+  }
+
+  Future<void> _loadUserFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = prefs.getString(_userKey);
+
+      if (userJson != null) {
+        final userMap = json.decode(userJson);
+        _user = User.fromJson(userMap);
+        notifyListeners();
+      }
+    } catch (error) {
+      print('Failed to load user from storage: $error');
+    }
+  }
+
+  Future<void> _saveUserToStorage(User user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = json.encode(user.toJson());
+      await prefs.setString(_userKey, userJson);
+    } catch (error) {
+      print('Failed to save user to storage: $error');
+    }
+  }
+
+  Future<void> _removeUserFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_userKey);
+    } catch (error) {
+      print('Failed to remove user from storage: $error');
     }
   }
 
@@ -47,11 +89,13 @@ class GoogleUserProvider extends ChangeNotifier {
       case GoogleSignInAuthenticationEventSignIn():
         {
           _user = User.fromGoogleSignInAccount(event.user);
+          _saveUserToStorage(_user!);
           notifyListeners();
         }
       case GoogleSignInAuthenticationEventSignOut():
         {
           _user = null;
+          _removeUserFromStorage();
           notifyListeners();
         }
     }
@@ -66,11 +110,9 @@ class GoogleUserProvider extends ChangeNotifier {
       _setError('Google Sign-In not initialized');
       return;
     }
-
     try {
       _setLoading(true);
       _setError(null);
-
       if (GoogleSignIn.instance.supportsAuthenticate()) {
         await GoogleSignIn.instance.authenticate();
       } else {

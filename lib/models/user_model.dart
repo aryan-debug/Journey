@@ -21,4 +21,22 @@ class User {
       photoUrl: account.photoUrl,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'displayName': displayName,
+      'photoUrl': photoUrl,
+    };
+  }
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
+      email: json['email'],
+      displayName: json['displayName'],
+      photoUrl: json['photoUrl'],
+    );
+  }
 }
